@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f5f1">
+<title>Sign in · Fitly Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#20221f;--muted:#777a73;--paper:#f7f5f1;--green:#345e49;--line:#e8e5df}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font-family:"DM Sans",sans-serif;display:grid;place-items:center;padding:24px}
+a{color:var(--green);text-decoration:none;font-weight:700}.shell{width:min(100%,960px);min-height:580px;background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 24px 70px #272a2112}
+.visual{background:#e9e7df;padding:38px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.brand{font:800 25px Manrope;letter-spacing:-1.4px}.mark{display:inline-grid;place-items:center;width:30px;height:30px;background:var(--green);color:white;border-radius:10px;margin-right:8px}.visual h1{font:800 clamp(34px,5vw,56px)/1.05 Manrope;letter-spacing:-3px;max-width:350px;margin:0;position:relative;z-index:1}.visual h1 em{font-style:normal;color:var(--green)}.orb{position:absolute;width:330px;height:330px;border:1px solid #d5d3cb;border-radius:50%;right:-100px;bottom:40px}.orb:after{content:"";position:absolute;inset:35px;border:1px solid #d5d3cb;border-radius:50%}.visual p{font-size:12px;color:#777a73;line-height:1.7;max-width:260px;margin:0;position:relative;z-index:1}.panel{padding:48px;display:flex;flex-direction:column;justify-content:center}.back{font-size:12px;margin-bottom:35px}.panel h2{font:800 28px Manrope;letter-spacing:-1px;margin:0 0 8px}.sub{color:var(--muted);font-size:13px;margin:0 0 25px;line-height:1.6}.tabs{display:flex;background:#f4f4f0;border-radius:12px;padding:4px;margin-bottom:22px}.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:9px;font:700 12px "DM Sans";color:#777;cursor:pointer}.tabs button.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px #2221}label{display:block;font-size:11px;font-weight:700;margin:14px 0 7px}input{width:100%;border:1px solid #deded7;border-radius:10px;padding:13px 14px;font:13px "DM Sans";outline:none}input:focus{border-color:var(--green);box-shadow:0 0 0 3px #345e4914}.submit{width:100%;border:0;border-radius:100px;background:var(--green);color:white;padding:14px;margin-top:22px;font:700 12px "DM Sans";cursor:pointer}.submit:disabled{opacity:.5;cursor:wait}.message{display:none;margin-top:15px;padding:12px;border-radius:10px;background:#f0f4eb;color:#345e49;font-size:12px;line-height:1.5}.message.show{display:block}.hint{font-size:10px;color:#8b8e86;line-height:1.6;margin-top:18px}.foot{font-size:11px;color:#8b8e86;margin-top:28px}
+@media(max-width:680px){body{padding:12px}.shell{grid-template-columns:1fr;min-height:0}.visual{min-height:190px;padding:24px}.visual h1{font-size:34px;max-width:280px}.visual p{display:none}.orb{width:210px;height:210px;right:-90px;bottom:-110px}.panel{padding:28px 24px}.back{margin-bottom:24px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="visual"><a class="brand" href="index.html" style="color:inherit"><span class="mark">f</span>fitly <span style="font:500 10px 'DM Sans';letter-spacing:0;color:#8a8c84">studio</span></a><div class="orb"></div><h1>Your style.<br><em>Your space.</em></h1><p>Sign in to keep your Fitly Studio experience in one place.</p></section>
+<section class="panel"><a class="back" href="index.html">← Back to Fitly</a><h2 id="heading">Welcome back</h2><p class="sub" id="sub">Sign in to continue to your fitting room.</p>
+<div class="tabs"><button class="active" id="signinTab" type="button">Sign in</button><button id="signupTab" type="button">Create account</button></div>
+<form id="authForm"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required><button class="submit" id="submit" type="submit">Sign in ↗</button></form>
+<div class="message" id="message" role="status"></div>
+<p class="hint">Account access requires a Supabase project. Add your project URL and anon key in the configuration section of this page. Never put a service-role key or private AI key in browser code.</p><div class="foot">© 2026 Fitly Studio</div></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Setup: replace these public project values with your own Supabase project URL and anon key.
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const configured = SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_ANON_KEY.includes("YOUR_");
+const client = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY) : null;
+let mode="signin";
+const form=document.getElementById("authForm"), message=document.getElementById("message"), submit=document.getElementById("submit");
+function setMode(next){mode=next;document.getElementById("signinTab").classList.toggle("active",mode==="signin");document.getElementById("signupTab").classList.toggle("active",mode==="signup");document.getElementById("heading").textContent=mode==="signin"?"Welcome back":"Create your account";document.getElementById("sub").textContent=mode==="signin"?"Sign in to continue to your fitting room.":"Join Fitly Studio to get started.";submit.textContent=mode==="signin"?"Sign in ↗":"Create account ↗";document.getElementById("password").autocomplete=mode==="signin"?"current-password":"new-password";message.classList.remove("show")}
+document.getElementById("signinTab").addEventListener("click",()=>setMode("signin"));
+document.getElementById("signupTab").addEventListener("click",()=>setMode("signup"));
+form.addEventListener("submit",async e=>{e.preventDefault();message.classList.remove("show");if(!client){message.textContent="Setup required: add your Supabase project URL and anon key in this page's configuration before using account features.";message.classList.add("show");return}submit.disabled=true;submit.textContent="Please wait…";try{const email=document.getElementById("email").value.trim();const password=document.getElementById("password").value;const result=mode==="signin"?await client.auth.signInWithPassword({email,password}):await client.auth.signUp({email,password});if(result.error)throw result.error;message.textContent=mode==="signin"?"Signed in successfully. Your account is ready.": "Account created. Check your email if confirmation is enabled, then sign in.";message.classList.add("show");if(mode==="signin")setTimeout(()=>location.href="index.html",700)}catch(err){message.textContent=err.message||"Something went wrong. Please try again.";message.classList.add("show")}finally{submit.disabled=false;submit.textContent=mode==="signin"?"Sign in ↗":"Create account ↗"}});
+</script>
+</body></html>
